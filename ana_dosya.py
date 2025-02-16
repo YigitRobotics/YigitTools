@@ -1,20 +1,17 @@
-import string
-import random
 import colorama
-import os
-import matplotlib.pyplot as plt
-import pandas as pd
 from typing import Dict, Any
-import requests # sonra kullanacam
-import socket # sonra kullanacam
-from concurrent.futures import ThreadPoolExecutor # sonra kullanacam
-import selenium.webdriver # sonra kullanacam
+from concurrent.futures import ThreadPoolExecutor
+from modules.rastgele import rastgele_sayi, rastgele_metin
+from modules.gorsellestirici import grafik_olustur
+import time
+import sys
+import platform
+import os
+import modules.tarayici as tarayici
+import modules.web_istekleri as web_istekleri
+import modules.seri_iletisim
 
-def rastgele_sayi(alt_sinir, ust_sinir):
-    return random.randint(alt_sinir, ust_sinir)
-
-def rastgele_metin(uzunluk, karakterler=string.ascii_lowercase + string.digits):
-    return ''.join(random.choice(karakterler) for _ in range(uzunluk))
+colorama.init(autoreset=True)
 
 class YGToolsYorumlayici:
     def __init__(self):
@@ -27,11 +24,40 @@ class YGToolsYorumlayici:
             'cikar': lambda x, y: x - y,
             'carp': lambda x, y: x * y,
             'bol': lambda x, y: x / y,
-            'grafik': self.grafik_olustur
+            'grafik': grafik_olustur,
+            'tarayici_ac': tarayici.siteye_gir,
+            'tarayici_kapat': tarayici.siteyi_kapat,
+            'tikla': tarayici.siteyi_tikla,
+            'yaz': tarayici.siteye_yaz,
+            'oku': tarayici.siteyi_oku,
+            'bekle': tarayici.siteyi_beklet,
+            'fare_tasi': tarayici.siteyi_tasi,
+            'kaydir': tarayici.siteyi_kaydir,
+            'geri': tarayici.siteyi_geri_al,
+            'ileri': tarayici.siteyi_ileri_al,
+            'yenile': tarayici.siteyi_yenile,
+            'ekran_buyut': tarayici.siteyi_ekrana_al,
+            'ekran_kucult': tarayici.siteyi_kucult,
+            'tam_ekran': tarayici.siteyi_tam_ekran_yap,
+            'ekran_kaydet': tarayici.siteyi_ekrani_kaydet,
+            'ekran_goster': tarayici.siteyi_ekrani_goster,
+            'html_al': web_istekleri.html_cek,
+            'baslik_al': web_istekleri.baslik_cek,
+            'link_al': web_istekleri.link_cek,
+            'resim_al': web_istekleri.resim_cek,
+            'metin_al': web_istekleri.metin_cek,
+            'baslik_ara': web_istekleri.baslik_ara,
+            'metin_ara': web_istekleri.metin_ara,
+            'etiket_ara': web_istekleri.etiket_ara,
+            'etiket_ara_ozellik': web_istekleri.etiket_ara_ozellik,
+            'etiket_ara_ozellik_deger': web_istekleri.etiket_ara_ozellik_deger,
+            'seri_baslat': modules.seri_iletisim.seri_iletisim,
+            'seri_porta_yaz': modules.seri_iletisim.seri_yaz,
+            'seri_porttan_oku': modules.seri_iletisim.seri_oku,
+            'seri_kapat': modules.seri_iletisim.seri_kapat
         }
 
     def sozluk_ayristir(self, metin: str) -> dict:
-        """Çok satırlı sözlük tanımlamalarını işler"""
         try:
             tek_satir = metin.replace('\n', '').strip()
             izin_verilen = set('{}[]:," 0123456789abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ')
@@ -41,32 +67,10 @@ class YGToolsYorumlayici:
         except Exception as e:
             raise ValueError(f"Sözlük ayrıştırma hatası: {str(e)}")
 
-    def grafik_olustur(self, grafik_turu, veri_sozlugu):
-        if not isinstance(veri_sozlugu, dict):
-            raise ValueError("Veri sözlük formatında olmalıdır!")
-            
-        if grafik_turu == "sutun":
-            veri_cercevesi = pd.DataFrame(veri_sozlugu)
-            if "isimler" in veri_sozlugu and "yaslar" in veri_sozlugu:
-                veri_cercevesi.plot(x="isimler", y="yaslar", kind='bar')
-                plt.title("YiğitTools | Sütun Grafiği")
-                plt.xlabel("İsimler")
-                plt.ylabel("Yaşlar")
-                plt.show()
-                return "Grafik oluşturuldu"
-        elif grafik_turu == "dagilim":
-            veri_cercevesi = pd.DataFrame(veri_sozlugu)
-            if "x" in veri_sozlugu and "y" in veri_sozlugu:
-                veri_cercevesi.plot(x="x", y="y", kind='scatter')
-                plt.title("YiğitTools | Dağılım Grafiği")
-                plt.show()
-                return "Grafik oluşturuldu"
-        return "Desteklenmeyen grafik türü veya veri yapısı"
-
     def satir_isle(self, satir: str):
-        if not satir.strip() or satir.startswith('#'):
+        if not satir.strip() or satir.startswith('!'):
             return None
-        
+
         try:
             if '=' in satir:
                 degisken_adi, ifade = satir.split('=', 1)
@@ -111,6 +115,8 @@ class YGToolsYorumlayici:
         if parametreler:
             for param in parametreler.split("$"):
                 param = param.strip()
+                if (param.startswith('"') and param.endswith('"')) or (param.startswith("'") and param.endswith("'")):
+                    param = param[1:-1]
                 if param in self.degiskenler:
                     islenmis_parametreler.append(self.degiskenler[param])
                 else:
@@ -134,14 +140,13 @@ def girdi_al(dosya_yolu):
                     print(f"{colorama.Fore.YELLOW}Satır {satir_numarasi}:{colorama.Style.RESET_ALL} {sonuc}")
 
 def ana_program():
-    print(colorama.Fore.GREEN, colorama.Style.BRIGHT + """
+    print(colorama.Fore.GREEN + colorama.Style.BRIGHT + """
 __   _____ ____ ___ _____   _____ ___   ___  _     ____  
 \ \ / /_ _/ ___|_ _|_   _| |_   _/ _ \ / _ \| |   / ___| 
  \ V / | | |  _ | |  | |     | || | | | | | | |   \___ \ 
   | |  | | |_| || |  | |     | || |_| | |_| | |___ ___) |
   |_| |___\____|___| |_|     |_| \___/ \___/|_____|____/ 
           
-
 Oxcanga Tarafından Oluşturuldu. \n
 """)
     dosya_yolu = input("Dosya yolu: ")
@@ -149,5 +154,36 @@ Oxcanga Tarafından Oluşturuldu. \n
         print(colorama.Fore.RED + "Hata: Sadece .ygtools uzantılı dosyalar desteklenir!" + colorama.Style.RESET_ALL)
         return
     girdi_al(dosya_yolu)
-    
-ana_program()
+
+def platform_belirle():
+    if platform.system == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
+
+def hazirla():
+    platform_belirle()
+    for _ in range(4):
+        print("YiğitTools yükleniyor.")
+        time.sleep(0.4)
+        platform_belirle()
+        print("YiğitTools yükleniyor..")
+        time.sleep(0.4)
+        platform_belirle()
+        print("YiğitTools yükleniyor...")
+        time.sleep(0.4)
+        platform_belirle()
+    platform_belirle()
+    print("YiğitTools başlatılıyor...")
+    time.sleep(1)
+    platform_belirle()
+    print("YiğitTools hazır!")
+    time.sleep(1)
+    platform_belirle()
+    ana_program()
+
+if __name__ == "__main__":
+    ana_program()
+else:
+    print("Bu dosya modül olarak kullanılamaz!", file=sys.stderr)
+    sys.exit(1)

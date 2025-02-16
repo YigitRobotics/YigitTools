@@ -1,0 +1,14 @@
+! Temel işlemler
+sayi1 = rastgele_sayi:: 1 $ 100
+sayi2 = rastgele_sayi:: 1 $ 100
+toplam = topla:: sayi1 $ sayi2
+yazdir:: toplam
+
+! Grafik oluşturma
+veriler = {"isimler": ["Ali", "Veli", "Ayşe"], "yaslar": [25, 30, 28]}
+grafik:: "sutun" $ veriler
+
+tarayicim = tarayici_ac::chrome$"https://www.example.com"
+yazdir::"Html çekiliyor \n"
+html_al::"https://www.example.com"
+yazdir::"Html alındı \n"

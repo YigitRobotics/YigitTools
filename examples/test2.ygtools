@@ -1,0 +1,5 @@
+ser_conn=seri_baslat::"/dev/tty.Bluetooth-Incoming-Port"$9600
+seri_porta_yaz::ser_conn$"Merhaba, seri bağlantı aktif!"
+gelen=seri_porttan_oku::ser_conn
+yazdir::gelen
+seri_kapat::ser_conn
