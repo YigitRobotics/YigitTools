@@ -1,6 +1,6 @@
 # YGTools Programlama Dili
 
-YGTools, temel matematiksel işlemler, rastgele değer üretimi ve grafik oluşturma gibi işlemleri basit bir sözdizimi ile yapmanıza olanak sağlayan bir programlama dilidir.
+YGTools, temel matematiksel işlemler, rastgele değer üretimi, grafik oluşturma, seri porta yazı yazma ve web sitesinden veri çekme gibi işlemleri basit bir sözdizimi ile yapmanıza olanak sağlayan bir programlama dilidir.
 
 ## Özellikler
 
@@ -10,34 +10,35 @@ YGTools, temel matematiksel işlemler, rastgele değer üretimi ve grafik oluşt
 - Grafik oluşturma desteği (sütun ve dağılım grafikleri)
 - Değişken tanımlama ve kullanma
 - Sözlük veri yapısı desteği
-
-## Komutlar
-
-### Temel Komutlar
-- `rastgele_sayi:: alt_sinir $ ust_sinir` - Belirtilen aralıkta rastgele sayı üretir
-- `rastgele_metin:: uzunluk` - Belirtilen uzunlukta rastgele metin üretir
-- `yazdir:: mesaj` - Ekrana mesaj yazdırır
-- `topla:: sayi1 $ sayi2` - İki sayıyı toplar
-- `cikar:: sayi1 $ sayi2` - İki sayının farkını alır
-- `carp:: sayi1 $ sayi2` - İki sayıyı çarpar
-- `bol:: sayi1 $ sayi2` - İki sayının bölümünü alır
-
-### Grafik Komutları
-- `grafik:: "sutun" $ veri_sozlugu` - Sütun grafiği oluşturur
-- `grafik:: "dagilim" $ veri_sozlugu` - Dağılım grafiği oluşturur
+- Seri porta yazı yazma (pyserial)
+- Web sitesinden veri çekme ve HTTP isteği gönderme (bs4 ve requests)
+- Tarayıcı otomasyonu ve özellikleri (selenium)
 
 ## Kullanım Örneği
 
-```
-# Temel işlemler
+```python
+! Temel işlemler
 sayi1 = rastgele_sayi:: 1 $ 100
 sayi2 = rastgele_sayi:: 1 $ 100
 toplam = topla:: sayi1 $ sayi2
 yazdir:: toplam
 
-# Grafik oluşturma
+! Grafik oluşturma
 veriler = {"isimler": ["Ali", "Veli", "Ayşe"], "yaslar": [25, 30, 28]}
 grafik:: "sutun" $ veriler
+
+! tarayıcı işlemleri
+tarayicim = tarayici_ac::chrome$"https://www.example.com"
+yazdir::"Html çekiliyor \n"
+html_al::"https://www.example.com"
+yazdir::"Html alındı \n"
+
+! seri port işlemleri
+ser_conn=seri_baslat::"COM3"$9600 ! COM3 portunu değiştirebilirsiniz.
+seri_porta_yaz::ser_conn$"Merhaba, seri bağlantı aktif!"
+gelen=seri_porttan_oku::ser_conn
+yazdir::gelen
+seri_kapat::ser_conn
 ```
 
 ## Dosya Uzantısı
@@ -53,6 +54,8 @@ YGTools programları `.ygtools` uzantılı dosyalarda yazılır.
 - typing
 - selenium
 - requests
+- bs4 (BeautifulSoup)
+- pyserial
 
 ## Kurulum
 
@@ -70,6 +73,6 @@ python ana_dosya.py
 
 ## Dikkat Edilmesi Gerekenler
 
-- Sadece `.ygtools` uzantılı dosyalar çalıştırılabilir
-- Sözlük tanımlamaları geçerli Python sözlük formatında olmalıdır
-- Grafik oluşturmak için veriler uygun formatta sözlük olarak tanımlanmalıdır
+- Sadece `.ygtools` uzantılı dosyalar çalıştırılabilir.
+- Sözlük tanımlamaları geçerli Python sözlük formatında olmalıdır.
+- Grafik oluşturmak için veriler uygun formatta sözlük olarak tanımlanmalıdır.
