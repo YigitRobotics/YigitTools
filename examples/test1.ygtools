@@ -11,4 +11,4 @@ grafik:: "sutun" $ veriler
 tarayicim = tarayici_ac::chrome$"https://www.example.com"
 yazdir::"Html çekiliyor \n"
 html_al::"https://www.example.com"
-yazdir::"Html alındı \n"
+yazdir::"Html alındı"

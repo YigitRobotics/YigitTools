@@ -10,6 +10,12 @@ import os
 import modules.tarayici as tarayici
 import modules.web_istekleri as web_istekleri
 import modules.seri_iletisim
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(description="YiğitTools - Python ile yazılmış bir otomasyon aracı")
+parser.add_argument("--yapi", help="Yeni bir proje yapısı oluşturur", action="store_true")
+argumanlar = parser.parse_args()
 
 colorama.init(autoreset=True)
 
@@ -182,8 +188,31 @@ def hazirla():
     platform_belirle()
     ana_program()
 
+def platform_belirle2():
+    if platform.system == "Windows":
+        return "COM3"
+    else:
+        return "/dev/ttyUSB0"
+
+if argumanlar.yapi:
+    seri_port = platform_belirle2()
+    print(colorama.Fore.GREEN + "Basit bir yapı oluşturuluyor..." + colorama.Fore.RESET)
+    time.sleep(3)
+    platform_belirle()
+    os.makedirs("YGtools", exist_ok=False)
+    os.makedirs("YGtools/modules", exist_ok=False)
+
+    with open("ygtools/main.ygtools", "w", encoding="utf-8") as dosya:
+        dosya.write('''! Bu dosya YiğitTools için örnek bir dosyadır.
+yazdir::"Merhaba, dünya!"
+        ''')
+    with open("ygtools/modules/seri_port_islemleri.ygtools", "w", encoding="utf-8") as dosya2:
+        dosya2.write(f'''! Bu dosya YiğitTools için örnek bir modül dosyasıdır.
+seri_baslat::"{seri_port}" $ 9600
+        ''')
+
 if __name__ == "__main__":
-    ana_program()
+    hazirla()
 else:
     print("Bu dosya modül olarak kullanılamaz!", file=sys.stderr)
     sys.exit(1)
