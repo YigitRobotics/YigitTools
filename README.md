@@ -51,12 +51,14 @@ YGTools programları `.ygtools` uzantılı dosyalarda yazılır.
 - matplotlib
 - pandas
 - typing
+- selenium
+- requests
 
 ## Kurulum
 
 1. Gerekli Python paketlerini yükleyin:
 ```bash
-pip install colorama matplotlib pandas
+pip install -r requirements.txt
 ```
 
 2. YGTools dosyasını indirin ve çalıştırın:
