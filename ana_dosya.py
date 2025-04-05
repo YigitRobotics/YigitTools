@@ -153,7 +153,7 @@ __   _____ ____ ___ _____   _____ ___   ___  _     ____
   | |  | | |_| || |  | |     | || |_| | |_| | |___ ___) |
   |_| |___\____|___| |_|     |_| \___/ \___/|_____|____/ 
           
-Oxcanga Tarafından Oluşturuldu. \n
+YigitRobotics Tarafından Oluşturuldu. \n
 """)
     dosya_yolu = input("Dosya yolu: ")
     if not dosya_yolu.endswith('.ygtools'):
